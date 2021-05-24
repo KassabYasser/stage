@@ -1,21 +1,54 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react'
+import { StatusBar } from 'react-native'
+import { Provider } from 'react-native-paper'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+import { theme } from './src/core/theme'
+import {
+  StartScreen,
+  LoginScreen,
+  RegisterScreen,
+  ResetPasswordScreen,
+  Dashboard,
+  FicheLocalisation,
+  FicheDescription,
+  FicheDendrometrique,
+  FicheArbreDominant,
+  FicheArbreEchantillont,
+  Compte,
+  ModifierCompte,
+  ConsulterFormulaire,
+} from './src/screens'
+
+
+StatusBar.setBarStyle('light-content')
+const Stack = createStackNavigator()
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <Provider theme={theme}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="StartScreen"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="StartScreen" component={StartScreen} />
+          <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen}/>
+          <Stack.Screen name="FicheLocalisation" component={FicheLocalisation} />
+          <Stack.Screen name="FicheDescription" component={FicheDescription} />          
+          <Stack.Screen name="FicheDendrometrique" component={FicheDendrometrique} />
+          <Stack.Screen name="FicheArbreDominant" component={FicheArbreDominant} />
+          <Stack.Screen name="FicheArbreEchantillont" component={FicheArbreEchantillont} />
+          <Stack.Screen name="ModifierCompte" component={ModifierCompte} />
+          <Stack.Screen name="Compte" component={Compte} />
+          <Stack.Screen name="ConsulterFormulaire" component={ConsulterFormulaire} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
