@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
+import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
@@ -10,10 +10,11 @@ import BackButton from '../components/BackButton'
 import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
-/*import {DatabaseConnection} from '../helpers/database.js'
-*/
+import { DatabaseConnection } from '../helpers/database'
+
+
+
 export default function LoginScreen({ navigation }) {
- // const connect= DatabaseConnection.getConnection();
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
@@ -25,10 +26,21 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
+    DatabaseConnection.getConnection().then((db)=>{
+      console.log('db get connection: ', db)
     })
+
+      DatabaseConnection.getAuth(email.value, password.value).then((len) => {
+        if(len>0){
+          console.log(len)
+          navigation.reset({
+          index: 0,
+          routes: [{ name: 'Dashboard' }],
+        })
+        }else{
+          alert('mot de passe ou email est incorrect')
+        }
+      })
   }
 
   return (

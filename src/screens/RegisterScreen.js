@@ -12,58 +12,46 @@ import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
 import { idValidator } from '../helpers/idValidator'
-// import {DatabaseConnection} from '../helpers/database';
+import { DatabaseConnection } from '../helpers/database'
 
 // const db= DatabaseConnection.getConnection();
 
 export default function RegisterScreen({ navigation }) {
-  const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [password1, setPassword1] = useState({ value: '', error: '' })
+  const [password2, setPassword2] = useState({ value: '', error: '' })
   const [id, setid] = useState({ value: '', error: '' })
 
-  const onSignUpPressed = () => {
-    //console.log(name, email, password , id)
-    const nameError = nameValidator(name.value)
+  const onRegisterPressed = () => {
+    if(password1.value!== password2.value){
+      alert('les mots de passes ne sont pas corrects');
+      return
+    }
     const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
+    const passwordError1 = passwordValidator(password1.value)
+    const passwordError2 = passwordValidator(password2.value)
     const idError = idValidator(id.value)
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError })
+    if (emailError || passwordError1 || passwordError2 || idError) {
       setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
+      setPassword1({ ...password1, error: passwordError1 })
+      setPassword2({ ...password2, error: passwordError2 })
       setid({ ...id, error: idError })
       return
     }
-    
-    // db.transaction(function (tx) {
-    //   console.log(email, password)
-    //   tx.executeSql(
-    //     'INSERT INTO login (email, pass, id) VALUES (?,?,?)',
-    //     [email, password, id],
-    //     (tx, results) => {
-    //       console.log('Results', results.rowsAffected);
-    //       if (results.rowsAffected > 0) {
-    //         Alert.alert(
-    //           'Succès',
-    //           'Votre Commpte A été Créer Avec Succès!',
-    //           [
-    //             {
-    //               text: 'Ok',
-    //               onPress: () => navigation.reset({index: 0, routes: [{ name: 'Dashboard' }] }),
-    //             },
-    //           ],
-    //           { cancelable: false }
-    //         );
-    //       } else alert('Erreur Register!');
-    //     }
-    //   );
-    // });
 
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
+    DatabaseConnection.registerUser(email.value, password1.value, id.value).then((results)=>{
+      alert('resitered successfully');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Dashboard' }],
+      })
     })
+
+
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: 'Dashboard' }],
+    // })
   }
 
   return (
@@ -80,14 +68,6 @@ export default function RegisterScreen({ navigation }) {
         errorText={id.error}
       />
       <TextInput
-        label="Nom"
-        returnKeyType="next"
-        value={name.value}
-        onChangeText={(text) => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
-      />
-      <TextInput
         label="E-mail"
         returnKeyType="next"
         value={email.value}
@@ -102,15 +82,24 @@ export default function RegisterScreen({ navigation }) {
       <TextInput
         label="Password"
         returnKeyType="done"
-        value={password.value}
-        onChangeText={(text) => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
+        value={password1.value}
+        onChangeText={(text) => setPassword1({ value: text, error: '' })}
+        error={!!password1.error}
+        errorText={password1.error}
+        secureTextEntry
+      />
+      <TextInput
+        label="reentrer votre Password"
+        returnKeyType="done"
+        value={password2.value}
+        onChangeText={(text) => setPassword2({ value: text, error: '' })}
+        error={!!password2.error}
+        errorText={password2.error}
         secureTextEntry
       />
       <Button
         mode="contained"
-        onPress={onSignUpPressed}
+        onPress={onRegisterPressed}
         style={{ marginTop: 24 }}
       >
         S'inscrire
