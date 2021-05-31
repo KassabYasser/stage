@@ -11,14 +11,13 @@ import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { DatabaseConnection } from '../helpers/database'
-
-
+import { getValueFor, save } from '../helpers/saveItems'
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
-  const onLoginPressed = () => {
+  const onLoginPressed = async () => {
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError) {
@@ -26,21 +25,31 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    DatabaseConnection.getConnection().then((db)=>{
+    console.log('http://192.168.0.144:3000/login/'+email.value+'/'+password.value)
+    fetch('http://192.168.0.144:3000/login/'+email.value+'/'+password.value)
+    .then(res => {JSON.stringify(res)})
+    .then(results => {
+      console.log("results", results)
+    })
+    .catch(error=> console.log(error))
+   /* DatabaseConnection.getConnection().then((db)=>{
       console.log('db get connection: ', db)
     })
 
-      DatabaseConnection.getAuth(email.value, password.value).then((len) => {
-        if(len>0){
-          console.log(len)
-          navigation.reset({
+    DatabaseConnection.getAuth(email.value, password.value).then((len) => {
+      if(len>0){
+        // saveItems("11", email.value);
+        save("11", email.value);
+        getValueFor('11');
+        console.log(len);
+        navigation.reset({
           index: 0,
           routes: [{ name: 'Dashboard' }],
         })
-        }else{
-          alert('mot de passe ou email est incorrect')
-        }
-      })
+      }else{
+        alert('mot de passe ou email est incorrect')
+      }
+    })*/
   }
 
   return (

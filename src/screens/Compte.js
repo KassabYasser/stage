@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import Header from '../components/Header'
@@ -6,48 +6,56 @@ import Button from '../components/Button'
 import Paragraph from '../components/Paragraph'
 import { StyleSheet, Text, View, Image } from "react-native";
 import { useNavigation } from '@react-navigation/native'
+import { DatabaseConnection } from '../helpers/database'
 
 export default function Compte() {
-
+    const [nom, setNom] = useState('')
+    const [prenom, setPrenom] = useState('')
+    const [id, setId]= useState('');
     const navigation = useNavigation();
+
+    DatabaseConnection.compteInfo().then((rows)=>{
+        console.log('compte: ', rows);
+        setNom(rows._array[0].nom); setPrenom(rows._array[0].prenom); setId(rows._array[0].id_employe);
+    })
+
     return (
         <Background>
-      <View style={{ alignSelf: "center" }}>
-                    <View style={styles.profileImage}>
-                        <Image source={require("../assets/logo.png")} style={styles.image} resizeMode="center"></Image>
-                    </View>
+            <View style={{ alignSelf: "center" }}>
+                <View style={styles.profileImage}>
+                    <Image source={require("../assets/logo.png")} style={styles.image} resizeMode="center"></Image>
                 </View>
-                <View style={styles.infoContainer}>
-                    <Text style={[styles.text, { fontWeight: "200", fontSize: 36 }]}>Abdellah Hajjam</Text>
-                    <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>Photographer</Text>
+            </View>
+            <View style={styles.infoContainer}>
+                <Text style={[styles.text, { fontWeight: "200", fontSize: 36 }]}>{prenom.toUpperCase()} {nom.toUpperCase()} </Text>
+                <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>{id}</Text>
+            </View>
+            <View style={styles.statsContainer}>        
+                <View style={[styles.statsBox, { borderColor: "#DFD8C8", borderLeftWidth: 1, borderRightWidth: 1 }]}>
+                    <Text style={[styles.text, { fontSize: 24 }]}>45,844</Text>
+                    <Text style={[styles.text, styles.subText]}>Fiche Inventaire</Text>
                 </View>
-    
-                <View style={styles.statsContainer}>
-                    
-                    <View style={[styles.statsBox, { borderColor: "#DFD8C8", borderLeftWidth: 1, borderRightWidth: 1 }]}>
-                        <Text style={[styles.text, { fontSize: 24 }]}>45,844</Text>
-                        <Text style={[styles.text, styles.subText]}>Fiche Inventaire</Text>
-                    </View>
-                    <View style={styles.statsBox}>
-                        <Text style={[styles.text, { fontSize: 24 }]}>302</Text>
-                        <Text style={[styles.text, styles.subText]}>Following</Text>
-                    </View>
+                <View style={styles.statsBox}>
+                    <Text style={[styles.text, { fontSize: 24 }]}>302</Text>
+                    <Text style={[styles.text, styles.subText]}>Following</Text>
                 </View>
-                <View style={styles.space}/>
-                <Button mode="contained" onPress={() => navigation.navigate('ModifierCompte')}>
-        Modifier Compte
-      </Button>
-      <Button
-        mode="contained"
-        onPress={() => navigation.navigate('RegisterScreen')}
-      >
-        Se deconnecter
-      </Button>
-      
-               
-      
-    </Background>
-
+            </View>
+            <View style={styles.space}/>
+            <Button mode="contained" onPress={() => navigation.navigate('ModifierCompte')}>
+                Modifier Compte
+            </Button>
+            <Button
+                mode="contained"
+                onPress={async () => {
+                    DatabaseConnection.compteInfo().then((rows)=>{
+                        console.log('compte: ', rows)
+                    })
+                    navigation.navigate('RegisterScreen')
+                }}
+            >
+                Se deconnecter
+            </Button>
+        </Background>
     )
 }
 const styles = StyleSheet.create({

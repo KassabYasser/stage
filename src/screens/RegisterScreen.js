@@ -13,8 +13,16 @@ import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
 import { idValidator } from '../helpers/idValidator'
 import { DatabaseConnection } from '../helpers/database'
-
+import * as Crypto from 'expo-crypto';
 // const db= DatabaseConnection.getConnection();
+
+async function encryptPassword(password) {
+    const digest = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.MD5,
+      password
+    );
+    console.log('Digest: ', digest);
+}
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
@@ -40,6 +48,7 @@ export default function RegisterScreen({ navigation }) {
     }
 
     DatabaseConnection.registerUser(email.value, password1.value, id.value).then((results)=>{
+      encryptPassword(password1.value);
       alert('resitered successfully');
       navigation.reset({
         index: 0,
@@ -47,11 +56,6 @@ export default function RegisterScreen({ navigation }) {
       })
     })
 
-
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'Dashboard' }],
-    // })
   }
 
   return (

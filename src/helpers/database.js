@@ -1,21 +1,23 @@
 import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
+import * as Crypto from 'expo-crypto';
+import { getValueFor } from './saveItems';
 
 async function openDatabase() {
     if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
         await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
     }
     await FileSystem.downloadAsync(
-        Asset.fromModule(require('../../assets/db/stage.db')).uri,
-        FileSystem.documentDirectory + 'SQLite/stage.db'
+        Asset.fromModule(require('../../assets/db/database.db')).uri,
+        FileSystem.documentDirectory + 'SQLite/database.db'
     );
-    return SQLite.openDatabase('stage.db');
+    return SQLite.openDatabase('database.db');
 }
 
 
 export const DatabaseConnection = {
-
+    
     getConnection: async () => {
         return new Promise((resolve, reject)=>{
             const db= openDatabase();
@@ -30,9 +32,8 @@ export const DatabaseConnection = {
             console.log('start getAuth: ', email, password)
             try {
               console.log('db: ', db);
-              const table= 'login'
                 db.transaction(tx => {
-                    tx.executeSql(`SELECT count(*) as 'isUser' from ${table} WHERE email= 'kassabyasser15@gmail.com' AND pass='admin00'`, [],
+                    tx.executeSql(`SELECT count(*) as 'isUser' from login WHERE email= ? AND pass=?`, [email, password],
                         (_, {rows}) => {
                             const len = rows._array[0].isUser;
                             console.log('results: ', rows)
@@ -72,5 +73,24 @@ export const DatabaseConnection = {
                 console.log('register catch: ',err)
             }
         })
-    }
+    },
+
+    compteInfo: async ()=>{
+        const db= await openDatabase();
+        const email= await getValueFor('11');
+        return new Promise((resolve, reject)=>{
+            console.log('begin compte info for : ', email);
+            try{
+                db.transaction(tx =>{
+                    tx.executeSql('SELECT * FROM employe where id_employe= (SELECT id_employe FROM login WHERE email=?);', [email],
+                        (_, { rows })=>{
+                            console.log('compte info results: ', rows);
+                            resolve(rows);
+                        },
+                        (_, error)=> reject(error)
+                    )
+                })
+            }catch(error){ console.error(error); }
+        })
+    },
 };

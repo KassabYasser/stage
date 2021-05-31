@@ -8,11 +8,12 @@ CREATE TABLE IF NOT EXISTS "employe" (
 CREATE TABLE IF NOT EXISTS "login" (
 	"email"	TEXT,
 	"pass"	TEXT NOT NULL,
-	"id_employe"	INTEGER NOT NULL,
+	"id_employe"	TEXT NOT NULL,
+	"key_pass"	TEXT,
 	FOREIGN KEY("id_employe") REFERENCES "employe"("id_employe"),
 	PRIMARY KEY("email")
 );
 INSERT INTO "employe" ("id_employe","nom","prenom") VALUES ('T100','abdellah','hajjam'),
  ('T101','kassab','yasser');
-INSERT INTO "login" ("email","pass","id_employe") VALUES ('kassabyasser@gmail.com','zebii','T101');
+INSERT INTO "login" ("email","pass","id_employe","key_pass") VALUES ('kassabyasser15@gmail.com','admin00','T101',NULL);
 COMMIT;
