@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
@@ -13,16 +13,9 @@ import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
 import { idValidator } from '../helpers/idValidator'
 import { DatabaseConnection } from '../helpers/database'
-import * as Crypto from 'expo-crypto';
+import { encryptPassword } from '../helpers/passwordEncryption'
 // const db= DatabaseConnection.getConnection();
 
-async function encryptPassword(password) {
-    const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.MD5,
-      password
-    );
-    console.log('Digest: ', digest);
-}
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
@@ -47,15 +40,44 @@ export default function RegisterScreen({ navigation }) {
       return
     }
 
-    DatabaseConnection.registerUser(email.value, password1.value, id.value).then((results)=>{
+    let password;
+    encryptPassword(password1.value).then((digest)=>{
+      password= digest;
+    }).then(()=>{
+      console.log('password2: ', password)
+      fetch('http://192.168.0.144:3000/register', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password
+      })
+    }).then((res) => {res.json()})
+        .then(() => {
+          // Showing response message coming from server after inserting records.
+          alert("votre compte a été créé successivement");
+          navigation.reset({
+          index: 0,
+          routes: [{ name: 'LoginScreen' }],
+        })
+        }).catch((error) => {
+            console.error(error);
+        });
+    })
+
+     
+    
+    /*DatabaseConnection.registerUser(email.value, password1.value, id.value).then((results)=>{
       encryptPassword(password1.value);
       alert('resitered successfully');
       navigation.reset({
         index: 0,
         routes: [{ name: 'Dashboard' }],
       })
-    })
-
+    })*/
   }
 
   return (

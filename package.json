@@ -21,6 +21,7 @@
     "expo-sqlite": "~9.1.0",
     "expo-status-bar": "~1.0.4",
     "express": "^4.17.1",
+    "md5": "^2.3.0",
     "mysql": "^2.18.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",

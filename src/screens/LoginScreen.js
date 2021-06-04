@@ -27,9 +27,16 @@ export default function LoginScreen({ navigation }) {
     }
     console.log('http://192.168.0.144:3000/login/'+email.value+'/'+password.value)
     fetch('http://192.168.0.144:3000/login/'+email.value+'/'+password.value)
-    .then(res => {JSON.stringify(res)})
+    .then(res => res.json())
     .then(results => {
-      console.log("results", results)
+      if(results.length===0){
+        alert("email ou mot de passe sont incorrect")
+      }else{
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Dashboard' }],
+        })
+      }
     })
     .catch(error=> console.log(error))
    /* DatabaseConnection.getConnection().then((db)=>{
