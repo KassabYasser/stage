@@ -15,7 +15,6 @@ export default function Compte() {
     const navigation = useNavigation();
 
     DatabaseConnection.compteInfo().then((rows)=>{
-        console.log('compte: ', rows);
         setNom(rows._array[0].nom); setPrenom(rows._array[0].prenom); setId(rows._array[0].id_employe);
     })
 

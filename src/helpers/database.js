@@ -26,7 +26,9 @@ export const DatabaseConnection = {
         });
     },
 
-    getAuth: async (email, password) => {
+    //@TODO: Code for sqlite and forms
+
+    /*getAuth: async (email, password) => {
         const db = await openDatabase();
         return new Promise((resolve, reject) => {
             console.log('start getAuth: ', email, password)
@@ -92,5 +94,5 @@ export const DatabaseConnection = {
                 })
             }catch(error){ console.error(error); }
         })
-    },
+    },*/
 };

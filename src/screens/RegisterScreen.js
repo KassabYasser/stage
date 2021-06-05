@@ -44,7 +44,6 @@ export default function RegisterScreen({ navigation }) {
     encryptPassword(password1.value).then((digest)=>{
       password= digest;
     }).then(()=>{
-      console.log('password2: ', password)
       fetch('http://192.168.0.144:3000/register', {
       method: 'POST',
       headers: {
@@ -52,12 +51,12 @@ export default function RegisterScreen({ navigation }) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        id_employe: id.value,
         email: email.value,
         password: password
       })
     }).then((res) => {res.json()})
         .then(() => {
-          // Showing response message coming from server after inserting records.
           alert("votre compte a été créé successivement");
           navigation.reset({
           index: 0,
@@ -68,16 +67,6 @@ export default function RegisterScreen({ navigation }) {
         });
     })
 
-     
-    
-    /*DatabaseConnection.registerUser(email.value, password1.value, id.value).then((results)=>{
-      encryptPassword(password1.value);
-      alert('resitered successfully');
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Dashboard' }],
-      })
-    })*/
   }
 
   return (

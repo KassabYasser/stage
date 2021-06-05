@@ -16,8 +16,29 @@ export default function ResetPasswordScreen({ navigation }) {
       setEmail({ ...email, error: emailError })
       return
     }
-    navigation.navigate('LoginScreen')
-  }
+    fetch('http://192.168.0.144:3000/reset-password', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email.value,
+      })
+    }).then((res) => {
+        res.json();
+          if(res.status==400) { alert("cet adresse n'existe pas"); }
+          else {
+            alert("un email a été envoyé dans votre adresse gmail");
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'LoginScreen' }]
+            })
+          }
+        }).catch((error) => {
+            console.error(error);
+        });
+      }
 
   return (
     <Background>

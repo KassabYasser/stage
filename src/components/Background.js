@@ -1,15 +1,17 @@
 import React from 'react'
-import { ImageBackground, StyleSheet, KeyboardAvoidingView } from 'react-native'
+import { ImageBackground, StyleSheet, KeyboardAvoidingView, Dimensions  } from 'react-native'
 import { theme } from '../core/theme'
 
 export default function Background({ children }) {
+  const {width, height} = Dimensions.get('window');
+
   return (
     <ImageBackground
      
       resizeMode="repeat"
       style={styles.background}
     >
-      <KeyboardAvoidingView style={styles.container} behavior="null">
+      <KeyboardAvoidingView style={styles.container} behavior="height">
         {children}
       </KeyboardAvoidingView>
     </ImageBackground>

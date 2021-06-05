@@ -25,7 +25,6 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    console.log('http://192.168.0.144:3000/login/'+email.value+'/'+password.value)
     fetch('http://192.168.0.144:3000/login/'+email.value+'/'+password.value)
     .then(res => res.json())
     .then(results => {
@@ -39,24 +38,6 @@ export default function LoginScreen({ navigation }) {
       }
     })
     .catch(error=> console.log(error))
-   /* DatabaseConnection.getConnection().then((db)=>{
-      console.log('db get connection: ', db)
-    })
-
-    DatabaseConnection.getAuth(email.value, password.value).then((len) => {
-      if(len>0){
-        // saveItems("11", email.value);
-        save("11", email.value);
-        getValueFor('11');
-        console.log(len);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Dashboard' }],
-        })
-      }else{
-        alert('mot de passe ou email est incorrect')
-      }
-    })*/
   }
 
   return (
