@@ -46,8 +46,6 @@ export default function FicheDescription({ navigation }) {
   const [surface, setsurface] = useState({ value: '', error: '' })
   const [nb_brins, setnb_brins] = useState({ value: '', error: '' })
   const [nb_souches, setnb_souches] = useState({ value: '', error: '' })
-  
-
 
   const onSignUpPressed = async () => {
     const essenceError = essenceValidator(essence.value)
