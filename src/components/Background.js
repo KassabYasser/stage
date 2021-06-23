@@ -11,7 +11,7 @@ export default function Background({ children }) {
       resizeMode="repeat"
       style={styles.background}
     >
-      <KeyboardAvoidingView style={styles.container} behavior="height">
+      <KeyboardAvoidingView style={styles.container} behavior="null">
         {children}
       </KeyboardAvoidingView>
     </ImageBackground>

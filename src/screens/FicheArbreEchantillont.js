@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet,TouchableOpacity,ScrollView } from 'react-native'
+import { View, StyleSheet,TouchableOpacity,ScrollView, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
@@ -21,6 +21,8 @@ import {
   hauteur_demasclageValidator,
 } from '../helpers/validators'
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DatabaseConnection } from '../helpers/database'
 
 export default function FicheArbreEchantillont() {
   const navigation = useNavigation();
@@ -36,7 +38,7 @@ export default function FicheArbreEchantillont() {
   const [hauteur_demasclage, sethauteur_demasclage] = useState({ value: '', error: '' })
   
   
-  const onSignUpPressed = () => {
+  const onSignUpPressed = async () => {
     const essenceError = essenceValidator(essence.value)
     const etageError = etageValidator(etage.value)
     const c1Error = c1Validator(c1.value)
@@ -60,13 +62,59 @@ export default function FicheArbreEchantillont() {
       sethauteur_totale({ ...hauteur_totale, error: hauteur_totaleError })
       sethauteur_fut({ ...hauteur_fut, error: hauteur_futError })
       sethauteur_demasclage({ ...hauteur_demasclage, error: hauteur_demasclageError })
-     
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
-    })
+
+    const FicheEchantillontData= {
+      essence: essence.value,
+      etage: etage.value,
+      c1: c1.value,
+      c2: c2.value,
+      epaisseur1: epaisseur1.value,
+      epaisseur2: epaisseur2.value,
+      longeur_cernes: longeur_cernes.value,
+      hauteur_totale: hauteur_totale.value,
+      hauteur_fut: hauteur_fut.value,
+      hauteur_demasclage: hauteur_demasclage.value,
+    }
+
+    try {
+        const EchantillontJson = JSON.stringify(FicheEchantillontData)
+        await AsyncStorage.setItem('FicheEchantillontData', EchantillontJson)
+    } catch (error) {
+        console.error(error)
+    }
+
+    await DatabaseConnection.insertFicheLocalisation();
+    
+    await DatabaseConnection.insertFicheDendrometrique();
+    await DatabaseConnection.insertFicheEchantillont();
+    await DatabaseConnection.insertFicheDominant();
+     const keys = ["FicheLocalisationData","FicheDescriptionData","FicheDendrometriqueData","FicheEchantillontData","FicheDominantData"]
+        try {
+          await AsyncStorage.multiRemove(keys)
+        } catch(e) {
+            console.error("async storage err: ", e);
+        }
+        alert("Votre fiche a été enregistrée avec succée")
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Dashboard' }],
+        })
+    /*DatabaseConnection.insertFicheLocalisation().then(()=> {
+
+        const keys = ["FicheLocalisationData","FicheDescriptionData","FicheDendrometriqueData","FicheEchantillontData","FicheDominantData"]
+        try {
+           AsyncStorage.multiRemove(keys)
+        } catch(e) {
+            console.error("async storage err: ", e);
+        }
+        alert("Votre fiche a été enregistrée avec succée")
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Dashboard' }],
+        })
+      })*/
   }
 
   return (

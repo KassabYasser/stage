@@ -12,6 +12,8 @@ import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { DatabaseConnection } from '../helpers/database'
 import { getValueFor, save } from '../helpers/saveItems'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from "@react-native-community/netinfo"
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
@@ -25,21 +27,21 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    fetch('http://192.168.0.144:3000/login/'+email.value+'/'+password.value)
-    .then(res => res.json())
-    .then(results => {
-      if(results.length===0){
-        alert("email ou mot de passe sont incorrect")
-      }else{
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Dashboard' }],
-        })
-      }
-    })
-    .catch(error=> console.log(error))
-  }
 
+    const res= await fetch('http://192.168.1.35:3000/login/'+email.value+'/'+password.value)
+    const results= await res.json();
+    if(results.length===0){
+      alert('email ou mot de passe sont incorrect')
+    }else{
+      const userData= JSON.stringify(results);
+      console.log(userData)
+      await AsyncStorage.setItem('userData', userData)
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Dashboard' }],
+      })
+    }
+  }
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />

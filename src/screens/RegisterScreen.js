@@ -14,8 +14,6 @@ import { nameValidator } from '../helpers/nameValidator'
 import { idValidator } from '../helpers/idValidator'
 import { DatabaseConnection } from '../helpers/database'
 import { encryptPassword } from '../helpers/passwordEncryption'
-// const db= DatabaseConnection.getConnection();
-
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })

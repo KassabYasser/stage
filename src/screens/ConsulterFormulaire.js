@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
-import { View, StyleSheet,TouchableOpacity,ScrollView } from 'react-native'
+import { View, StyleSheet,TouchableOpacity,ScrollView, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Button from '../components/Button'
 import { theme } from '../core/theme'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useNavigation } from '@react-navigation/native';
+import { DatabaseConnection } from '../helpers/database'
 
-export default function ConsulterFormulaire({ navigation }) {
+export default function ConsulterFormulaire() {
+  //date format in DB: 17-6-2021 (DD-MM-YYYY)
+  // Date format given by date picker: 2021-06-17 (YYYY-MM-DD)
   const [pickerMode, setPickerMode] = useState(null);
   const showDatePicker = () => {
     setPickerMode("date");
@@ -15,12 +19,33 @@ export default function ConsulterFormulaire({ navigation }) {
   const hidePicker = () => {
     setPickerMode(null);
   };
-
-  const handleConfirm = (date) => {
+  let dateChosen;
+  const handleConfirm = async (date) => {
     // In order to prevent the double-shown popup bug on Android, picker has to be hidden first (https://github.com/react-native-datetimepicker/datetimepicker/issues/54#issuecomment-618776550)
     hidePicker();
-    console.warn("A date has been picked: ", date);
+    var res = date.toISOString().slice(0,10).split("-")
+    var d= res[2]+'-'+res[1]+'-'+res[0]
+    console.log("res: ", d)
+
+
+    const fetchRes= await fetch('http://192.168.1.35:3000/date-search/')
+    const results= await fetchRes.json()
+    if(results.length===0){
+      alert("aucun resultat n'a été activé")
+    }else{
+      navigation.navigate('ResultatDate',{
+          results: results,
+      })
+    }
   };
+
+  const navigation= useNavigation();
+  const onNamePress= ()=>{
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'ResultatDate' }],
+    })
+  }
 
   return (
     <Background>
@@ -45,7 +70,7 @@ export default function ConsulterFormulaire({ navigation }) {
 
       <Button
         mode="contained"
-        onPress={showDatePicker}
+        onPress={onNamePress}
         style={{ marginTop: 24 }}
       >
         recherche par nom

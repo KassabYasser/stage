@@ -15,11 +15,10 @@ import {
   classeValidator,
   CMValidator,
 } from '../helpers/validators'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 export default function FicheDendrometrique() {
-  console.log('nice')
   const navigation= useNavigation();
   const [essence, setessence] = useState({ value: '', error: '' })
   const [demasclee, setdemasclee] = useState({ value: '', error: '' })
@@ -28,7 +27,7 @@ export default function FicheDendrometrique() {
   const [CM, setCM] = useState({ value: '', error: '' })
   
   
-  const onSuivantPressed = () => {
+  const onSuivantPressed =async  () => {
     /*const essenceError = essenceValidator(essence.value)
     const demascleeError = demascleeValidator(demasclee.value)
     const codeError = codeValidator(code.value)
@@ -44,6 +43,21 @@ export default function FicheDendrometrique() {
       setCM({ ...CM, error: CMError })
       return
     }*/
+    FicheDendrometriqueData= {
+      essence: essence.value,
+      demasclee: demasclee.value,
+      code: code.value,
+      classe: classe.value,
+      CM: CM.value,
+    }
+
+    try {
+        const DendrometriqueJson = JSON.stringify(FicheDendrometriqueData)
+        await AsyncStorage.setItem('FicheDendrometriqueData', DendrometriqueJson)
+    } catch (error) {
+        console.error(error)
+    }
+
     navigation.reset({
       index: 0,
       routes: [{ name: 'FicheArbreDominant' }],

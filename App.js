@@ -18,8 +18,11 @@ import {
   Compte,
   ModifierCompte,
   ConsulterFormulaire,
+  MainScreen,
+  SyncData,
+  ResultatDate,
+  DetailResultatDate,
 } from './src/screens'
-
 
 StatusBar.setBarStyle('light-content')
 const Stack = createStackNavigator()
@@ -47,6 +50,10 @@ export default function App() {
           <Stack.Screen name="ModifierCompte" component={ModifierCompte} />
           <Stack.Screen name="Compte" component={Compte} />
           <Stack.Screen name="ConsulterFormulaire" component={ConsulterFormulaire} />
+          <Stack.Screen name="MainScreen" component={MainScreen} />
+          <Stack.Screen name="SyncData" component={SyncData} />
+          <Stack.Screen name="DetailResultatDate" component={DetailResultatDate} />
+          <Stack.Screen name="ResultatDate" component={ResultatDate} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

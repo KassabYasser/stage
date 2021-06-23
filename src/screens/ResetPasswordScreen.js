@@ -16,7 +16,7 @@ export default function ResetPasswordScreen({ navigation }) {
       setEmail({ ...email, error: emailError })
       return
     }
-    fetch('http://192.168.0.144:3000/reset-password', {
+    fetch('http://192.168.1.35:3000/reset-password', {
       method: 'POST',
       headers: {
         'Accept': 'application/json, text/plain, */*',

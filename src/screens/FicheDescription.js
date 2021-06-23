@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { View, StyleSheet,TouchableOpacity,ScrollView } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
@@ -24,11 +24,13 @@ import {
   nb_brinsValidator,
   nb_souchesValidator,
 } from '../helpers/validators'
+//import { useNavigation } from '@react-navigation/native';
+import { DatabaseConnection } from '../helpers/database'
 
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function FicheDescription() {
-  const navigation= useNavigation();
+export default function FicheDescription({ navigation }) {
+//  const navigation= useNavigation();
 
   const [essence, setessence] = useState({ value: '', error: '' })
   const [stade_dev, setstade_dev] = useState({ value: '', error: '' })
@@ -47,7 +49,7 @@ export default function FicheDescription() {
   
 
 
-  const onSignUpPressed = () => {
+  const onSignUpPressed = async () => {
     const essenceError = essenceValidator(essence.value)
     const stade_devError = stade_devValidator(stade_dev.value)
     const couvretError = couvretValidator(couvret.value)
@@ -63,7 +65,6 @@ export default function FicheDescription() {
     const nb_brinsError = nb_brinsValidator(nb_brins.value)
     const nb_souchesError = nb_souchesValidator(nb_souches.value)
     
-
     if (essenceError || stade_devError || couvretError ||fructificationError ||  nature_regError ||
       nb_semisError || etat_sanitaireError || bois_gisantError || ecimageError || hauteur_moyenneError || c_moyenneError || surfaceError || nb_brinsError || nb_souchesError) {
       setessence({ ...essence, error: essenceError })
@@ -80,9 +81,31 @@ export default function FicheDescription() {
       setsurface({ ...surface, error: surfaceError })
       setnb_brins({ ...nb_brins, error: nb_brinsError })
       setnb_souches({ ...nb_souches, error: nb_souchesError })
-     
       return
     }
+    const FicheDescriptionData= {
+      essence: essence.value,
+      stade_dev: stade_dev.value,
+      couvret: couvret.value,
+      fructification: fructification.value,
+      nature_reg: nature_reg.value,
+      nb_semis: nb_semis.value,
+      etat_sanitaire: etat_sanitaire.value,
+      bois_gisant: bois_gisant.value,
+      ecimage: ecimage.value,
+      hauteur_moyenne: hauteur_moyenne.value,
+      c_moyenne: c_moyenne.value,
+      surface: surface.value,
+      nb_brins: nb_brins.value,
+      nb_souches: nb_souches.value,
+    }
+    try {
+        const DescriptionJson = JSON.stringify(FicheDescriptionData)
+        await AsyncStorage.setItem('FicheDescriptionData', DescriptionJson)
+    } catch (error) {
+        console.error(error)
+    }
+    await DatabaseConnection.insertFicheDescription();
     navigation.reset({
       index: 0,
       routes: [{ name: 'FicheDendrometrique' }],

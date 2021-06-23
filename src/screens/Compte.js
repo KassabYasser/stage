@@ -7,6 +7,7 @@ import Paragraph from '../components/Paragraph'
 import { StyleSheet, Text, View, Image } from "react-native";
 import { useNavigation } from '@react-navigation/native'
 import { DatabaseConnection } from '../helpers/database'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Compte() {
     const [nom, setNom] = useState('')
@@ -14,10 +15,18 @@ export default function Compte() {
     const [id, setId]= useState('');
     const navigation = useNavigation();
 
-    DatabaseConnection.compteInfo().then((rows)=>{
+    /*DatabaseConnection.compteInfo().then((rows)=>{
         setNom(rows._array[0].nom); setPrenom(rows._array[0].prenom); setId(rows._array[0].id_employe);
-    })
+    })*/
 
+    try{
+        AsyncStorage.getItem('userData').then((jsonValue)=>{
+            const res= JSON.parse(jsonValue)
+            setNom(res[0].nom); setPrenom(res[0].prenom); setId(res[0].id_employe);
+        })
+    }catch(err){
+        console.error('compte fe: ', err)
+    }
     return (
         <Background>
             <View style={{ alignSelf: "center" }}>
@@ -60,12 +69,10 @@ export default function Compte() {
 const styles = StyleSheet.create({
     Red: {
         color: '#F44336',
-        fontWeight: 'bold',
         fontStyle: 'italic'
     },
     black: {
         color: '#000000',
-        fontWeight: 'bold'
     },
 
     container: {
@@ -73,7 +80,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFF"
     },
     text: {
-        fontFamily: "bold",
         color: "black"
     },
     image: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, TouchableOpacity,ScrollView } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
@@ -25,13 +25,23 @@ import {
   roche_mereValidator,
   age_moyenValidator
 } from '../helpers/validators'
+import { DatabaseConnection } from '../helpers/database'
+//package to access the device location
+import * as Location from 'expo-location';
+//package to store data intered by the user
+import AsyncStorage from '@react-native-async-storage/async-storage';
+//import { useNavigation } from '@react-navigation/native';
 
-import { useNavigation } from '@react-navigation/native';
+const getCurrentDate=()=>{
+      var date = new Date().getDate();
+      var month = new Date().getMonth() + 1;
+      var year = new Date().getFullYear();
+      return date + '-' + month + '-' + year;//format: dd-mm-yyyy;
+}
 
+export default function FicheLocalisation(props, {navigation}) {
+  console.log('props: ', props.route.params.data.route.params)
 
-export default function FicheLocalisation() {
-
-  const navigation= useNavigation();
   const [observateur, setobservateur] = useState({ value: '', error: '' })
   const [foret, setforet] = useState({ value: '', error: '' })
   const [triage, settriage] = useState({ value: '', error: '' })
@@ -47,9 +57,42 @@ export default function FicheLocalisation() {
   const [profondeur, setprofondeur] = useState({ value: '', error: '' })
   const [roche_mere, setroche_mere] = useState({ value: '', error: '' })
   const [age_moyen, setage_moyen] = useState({ value: '', error: '' })
+  //variable to store the location
+  const [location, setLocation] = useState(null);
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      console.log("location: ", location.coords.longitude)
+    })();
+  }, []);
 
+  /*if(props.route.params.data.route.params!==null){
+    //const navigation= useNavigation();
+    console.log('is not null',  props.route.params.data.route.params.data.DATE_OBSERV)
+  setobservateur({ value: props.route.params.data.route.params.data.OBSERV_NOM, error: '' })
+setforet({ value: 'maamora', error: '' })
+settriage({ value: props.route.params.data.route.params.data.TRIAGE, error: '' })
+setstrate({ value: props.route.params.data.route.params.data.STRATE, error: '' })
+setaltitude({ value: props.route.params.data.route.params.data.ALTITUDE, error: '' })
+setorientation({ value: props.route.params.data.route.params.data.ORIENTATION, error: '' })
+settopologie({ value: '1', error: '' })
+setnb_essences({ value: props.route.params.data.route.params.data.NBESSENCE, error: '' })
+setn_paracelle({ value: props.route.params.data.route.params.data.PARCELLE_NO, error: '' })
+setcanton({ value: props.route.params.data.route.params.data.CANTON, error: '' })
+setn_placette({ value: props.route.params.data.route.params.data.PLACETTE_NO, error: '' })
+setpente({ value: props.route.params.data.route.params.data.PENTE, error: '' })
+setprofondeur({ value:  props.route.params.data.route.params.data.PROFONDEUR, error: '' })
+setroche_mere({ value: props.route.params.data.route.params.data.ROCHE_MERE, error: '' })
+setage_moyen({ value: props.route.params.data.route.params.data.AGE_MOY, error: '' })
+  }*/
 
-  const onSignUpPressed = () => {
+  const onSignUpPressed = async () => {
     const observateurError = observateurValidator(observateur.value)
     const foretError = foretValidator(foret.value)
     const triageError = triageValidator(triage.value)
@@ -84,6 +127,33 @@ export default function FicheLocalisation() {
       setroche_mere({ ...roche_mere, error: roche_mereError })
       setage_moyen({ ...age_moyen, error: age_moyenError })
       return
+    }
+    console.log("current date", getCurrentDate())
+    const FicheLocalisationData= {
+      observateur: observateur.value,
+      foret: foret.value,
+      triage: triage.value,
+      strate: strate.value,
+      altitude: altitude.value,
+      orientation: orientation.value,
+      topologie: topologie.value,
+      nb_essences: nb_essences.value,
+      n_paracelle: n_paracelle.value,
+      canton: canton.value,
+      n_placette: n_placette.value,
+      pente: pente.value,
+      profondeur: profondeur.value,
+      roche_mere: roche_mere.value,
+      age_moyen: age_moyen.value,
+      longitude: location.coords.longitude,
+      latitude: location.coords.latitude,
+      date_observ: getCurrentDate(),
+    }
+    try {
+        const LocalisatioinJson = JSON.stringify(FicheLocalisationData)
+        await AsyncStorage.setItem('FicheLocalisationData', LocalisatioinJson)
+    } catch (error) {
+        console.error(error)
     }
     
     navigation.reset({
@@ -230,14 +300,10 @@ export default function FicheLocalisation() {
       >
         Suivant
       </Button>
-      
-
-     
     </Background>
     </ScrollView>
-    
-
   )
+  
 }
 
 const styles = StyleSheet.create({

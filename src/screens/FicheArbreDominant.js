@@ -16,6 +16,7 @@ import {
 } from '../helpers/validators'
 
 import {useNavigation} from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FicheArbreDominant() {
   const navigation= useNavigation();
@@ -24,8 +25,7 @@ export default function FicheArbreDominant() {
   const [age, setage] = useState({ value: '', error: '' })
   const [hauteur_totale, sethauteur_totale] = useState({ value: '', error: '' })
   
-  const onSignUpPressed = () => {
-    console.log("nice")
+  const onSignUpPressed = async () => {
     const essenceError = essenceValidator(essence.value)
     const ageError = ageValidator(age.value)
     const c1Error = c1Validator(c1.value)
@@ -39,6 +39,21 @@ export default function FicheArbreDominant() {
       
       return
     }
+
+    const FicheDominantData= {
+      essence: essence.value,
+      c1: c1.value,
+      age: age.value,
+      hauteur_totale: hauteur_totale.value,
+    }
+
+    try {
+        const DominantJson = JSON.stringify(FicheDominantData)
+        await AsyncStorage.setItem('FicheDominantData', DominantJson)
+    } catch (error) {
+        console.error(error)
+    }
+
     navigation.reset({
       index: 0,
       routes: [{ name: 'FicheArbreEchantillont' }],
